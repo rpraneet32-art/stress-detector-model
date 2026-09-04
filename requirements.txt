@@ -1,0 +1,24 @@
+# Core ML
+torch==2.2.2
+torchvision==0.17.2
+torch-geometric==2.5.3
+
+# Classical ML
+scikit-learn==1.4.2
+xgboost==2.0.3
+
+# Signal processing
+scipy==1.13.0
+PyWavelets==1.6.0
+numpy==1.26.4
+pandas==2.2.2
+
+# Export & validation
+onnx==1.16.1
+onnxruntime==1.18.1
+
+# Visualization
+matplotlib==3.9.0
+
+# Utilities
+tqdm==4.66.4

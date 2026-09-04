@@ -1,0 +1,43 @@
+
+# Raw data - never commit
+data/raw/
+data/processed/
+
+# Checkpoints & model artifacts
+checkpoints/
+outputs/
+*.ckpt
+*.pt
+*.pth
+*.onnx
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Logs & artifacts (keep structure, not contents)
+logs/
+runs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
