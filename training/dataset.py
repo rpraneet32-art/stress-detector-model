@@ -128,7 +128,7 @@ def make_dataloaders(
     val_dict: dict,
     test_dict: dict,
     batch_size: int = BATCH_SIZE,
-    num_workers: int = 2,
+    num_workers: int = 0,
 ) -> Tuple[DataLoader, DataLoader, DataLoader]:
     """Create train/val/test DataLoaders from fold dicts."""
 

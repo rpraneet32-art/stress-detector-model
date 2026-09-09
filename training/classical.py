@@ -89,36 +89,27 @@ def train_classical_loso(
     clf_name: str,
     seed: int = GLOBAL_SEED,
     n_trials: int = HP_SEARCH_TRIALS_CLASSICAL,
+    subjects: list = None,
 ) -> list:
     """
     Run LOSO cross-validation for one classical model.
-
-    Parameters
-    ----------
-    dataset_dict : full windowed dataset (all subjects)
-    clf_name     : "RF", "SVM", or "XGBoost"
-    seed         : random seed
-    n_trials     : max RandomizedSearchCV trials (budget cap)
-
-    Returns
-    -------
-    List of per-fold result dicts
+    Leave-One-Subject-Out cross-validation for a classical classifier.
     """
     seed_everything(seed)
+    X_all = dataset_dict["features"]      # (N, 15)
+    y_all = dataset_dict["labels"]        # (N,)
+    s_all = dataset_dict["subject_ids"]   # (N,)
+
     fold_results = []
-
-    X_all = dataset_dict["features"]       # (N, 15)
-    y_all = dataset_dict["labels"]         # (N,)
-    s_all = dataset_dict["subject_ids"]    # (N,)
-
     config = {
         "model": clf_name,
         "n_trials": n_trials,
         "seed": seed,
     }
 
-    for fold_idx, test_sub in enumerate(ALL_SUBJECTS):
-        print(f"  [{clf_name}] Fold {fold_idx+1}/{len(ALL_SUBJECTS)} — test=S{test_sub}", end=" ")
+    target_subjects = subjects if subjects is not None else ALL_SUBJECTS
+    for fold_idx, test_sub in enumerate(target_subjects):
+        print(f"  [{clf_name}] Fold {fold_idx+1}/{len(target_subjects)} - test=S{test_sub}", end=" ", flush=True)
         t0 = time.time()
 
         train_mask = s_all != test_sub
@@ -148,7 +139,7 @@ def train_classical_loso(
         metrics = compute_metrics(y_test, y_pred, y_prob)
 
         wall_time = time.time() - t0
-        print(f"→ F1={metrics['f1']:.3f} AUC={metrics['auc_roc']:.3f} ({wall_time:.1f}s)")
+        print(f"-> F1={metrics['f1']:.3f} AUC={metrics['auc_roc']:.3f} ({wall_time:.1f}s)")
 
         # Save best pipeline for this fold
         os.makedirs(CHECKPOINT_DIR, exist_ok=True)
@@ -177,14 +168,24 @@ def train_classical_loso(
     return fold_results
 
 
-def run_all_classical(dataset_dict: dict, seed: int = GLOBAL_SEED) -> dict:
-    """Train all three classical baselines and return results keyed by model name."""
+def run_all_classical(
+    dataset_dict: dict,
+    seed: int = GLOBAL_SEED,
+    subjects: list = None,
+    n_trials: int = None,
+    models: list = None,
+) -> dict:
+    """Train classical baselines and return results keyed by model name."""
+    if n_trials is None:
+        n_trials = 10 if (subjects and len(subjects) < len(ALL_SUBJECTS)) else 15
+    if models is None:
+        models = ["RF", "SVM", "XGBoost"]
     results = {}
-    for clf_name in ["RF", "SVM", "XGBoost"]:
-        print(f"\n── {clf_name} ──────────────────────────────────────────")
-        folds = train_classical_loso(dataset_dict, clf_name, seed=seed)
+    for clf_name in models:
+        print(f"\n-- {clf_name} ------------------------------------------", flush=True)
+        folds = train_classical_loso(dataset_dict, clf_name, seed=seed, subjects=subjects, n_trials=n_trials)
         fold_metrics = [f["metrics"] for f in folds]
         summary = aggregate_fold_results(fold_metrics)
         results[clf_name] = {"folds": folds, "summary": summary}
-        print(f"  {clf_name} LOSO mean: {summary}")
+        print(f"  {clf_name} LOSO mean: {summary}", flush=True)
     return results

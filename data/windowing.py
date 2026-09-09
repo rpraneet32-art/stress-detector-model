@@ -267,7 +267,7 @@ def build_dataset(subjects: List[int] = None) -> dict:
         all_features.append(feats)
         all_labels.append(labs)
         all_sids.append(sids)
-        print(f"→ {len(labs)} windows (stress={int((labs==1).sum())}, non-stress={int((labs==0).sum())})")
+        print(f"-> {len(labs)} windows (stress={int((labs==1).sum())}, non-stress={int((labs==0).sum())})")
 
     dataset = {
         "tensors":     np.concatenate(all_tensors,  axis=0),   # (N, 3, 384)
@@ -283,7 +283,7 @@ def save_dataset(dataset: dict, out_dir: str = PROCESSED_DATA_DIR) -> str:
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, "wesad_windows.npz")
     np.savez_compressed(out_path, **dataset)
-    print(f"Dataset saved → {out_path}")
+    print(f"Dataset saved -> {out_path}")
     print(f"  tensors:     {dataset['tensors'].shape}")
     print(f"  features:    {dataset['features'].shape}")
     print(f"  labels:      {dataset['labels'].shape}")
@@ -329,5 +329,5 @@ if __name__ == "__main__":
     out_path = os.path.join(OUTPUTS_DIR, "windowing_summary.json")
     with open(out_path, "w") as f:
         json.dump(summary, f, indent=2)
-    print(f"\nWindowing summary saved → {out_path}")
+    print(f"\nWindowing summary saved -> {out_path}")
     print(f"Feature names ({N_FEATURES}): {FEATURE_NAMES}")

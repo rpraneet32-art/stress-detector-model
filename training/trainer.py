@@ -130,14 +130,15 @@ def train_one_fold(
             patience_count += 1
 
         if patience_count >= EARLY_STOP_PATIENCE:
-            print(f"    Early stop at epoch {epoch} (val_loss={best_val_loss:.4f})")
+            print(f"    Early stop at epoch {epoch} (best val_loss={best_val_loss:.4f})", flush=True)
             break
 
-        if epoch % 10 == 0 or epoch == 1:
+        if epoch % 5 == 0 or epoch == 1:
             print(
                 f"    Epoch {epoch:3d}/{MAX_EPOCHS} | "
                 f"train_loss={epoch_loss:.4f} | val_loss={val_loss:.4f} | "
-                f"lr={scheduler.get_last_lr()[0]:.2e}"
+                f"lr={scheduler.get_last_lr()[0]:.2e}",
+                flush=True
             )
 
     wall_time = time.time() - t_start
@@ -153,7 +154,8 @@ def train_one_fold(
     latency = benchmark_latency(model, window_shape=(1, 3, 384), device="cpu")
     print(
         f"    CPU latency: {latency['latency_mean_ms']:.1f} ms "
-        f"({'PASS' if latency['latency_pass'] else 'FAIL ⚠️ >50ms'})"
+        f"({'PASS' if latency['latency_pass'] else 'FAIL >50ms'})",
+        flush=True
     )
 
     # ── Log everything ───────────────────────────────────────────────────

@@ -58,6 +58,9 @@ def parse_args():
                    help="Only train classical baselines")
     p.add_argument("--dl-only", action="store_true",
                    help="Only train deep learning models")
+    p.add_argument("--classical-models", nargs="+", default=["RF", "SVM", "XGBoost"],
+                   choices=["RF", "SVM", "XGBoost"],
+                   help="Classical models to train (default: RF, SVM, XGBoost)")
     p.add_argument("--fold", type=int, default=None,
                    help="Run only this specific test subject fold (for debugging)")
     p.add_argument("--seed", type=int, default=GLOBAL_SEED)
@@ -168,7 +171,7 @@ def main():
     os.makedirs(CHECKPOINT_DIR, exist_ok=True)
 
     print("=" * 60)
-    print("  STRESS DETECTOR — TRAINING PIPELINE")
+    print("  STRESS DETECTOR - TRAINING PIPELINE")
     print("=" * 60)
 
     # ── Step 1: Load or build dataset ────────────────────────────────────
@@ -190,18 +193,18 @@ def main():
     print(f"  Class weights: non-stress={class_weights[0]:.3f}, stress={class_weights[1]:.3f}")
 
     # ── Step 2: Deep learning LOSO training ──────────────────────────────
+    folds_to_run = [args.fold] if args.fold else ALL_SUBJECTS
     dl_results = {}
     if not args.classical_only:
-        print(f"\n[2/5] DL LOSO training — models: {args.models}")
-        folds_to_run = [args.fold] if args.fold else ALL_SUBJECTS
+        print(f"\n[2/5] DL LOSO training - models: {args.models}")
 
         for model_name in args.models:
-            print(f"\n  ── {model_name.upper()} ────────────────────────────────────────")
+            print(f"\n  -- {model_name.upper()} ----------------------------------------")
             model_class = MODEL_REGISTRY[model_name]
             fold_results = []
 
             for fold_sub in folds_to_run:
-                print(f"  Fold S{fold_sub} ({folds_to_run.index(fold_sub)+1}/{len(folds_to_run)}):")
+                print(f"  Fold S{fold_sub} ({folds_to_run.index(fold_sub)+1}/{len(folds_to_run)}):", flush=True)
                 train_d, val_d, test_d = loso_split(dataset, fold_sub, seed=args.seed)
                 train_dl, val_dl, test_dl = make_dataloaders(
                     train_d, val_d, test_d, batch_size=args.batch_size
@@ -225,9 +228,10 @@ def main():
                 fold_results.append(result)
                 m = result["metrics"]
                 print(
-                    f"    → F1={m['f1']:.4f}  AUC={m['auc_roc']:.4f}  "
+                    f"    -> F1={m['f1']:.4f}  AUC={m['auc_roc']:.4f}  "
                     f"Acc={m['accuracy']:.4f}  "
-                    f"Lat={m.get('latency_mean_ms', 0):.1f}ms"
+                    f"Lat={m.get('latency_mean_ms', 0):.1f}ms",
+                    flush=True
                 )
 
             dl_results[model_name] = {
@@ -238,8 +242,10 @@ def main():
     # ── Step 3: Classical baselines ──────────────────────────────────────
     classical_results = {}
     if not args.dl_only:
-        print("\n[3/5] Classical baselines (RF / SVM / XGBoost)...")
-        classical_results = run_all_classical(dataset, seed=args.seed)
+        print("\n[3/5] Classical baselines (RF / SVM / XGBoost)...", flush=True)
+        classical_results = run_all_classical(
+            dataset, seed=args.seed, subjects=folds_to_run, models=args.classical_models
+        )
 
     # ── Step 4: Reporting ────────────────────────────────────────────────
     print("\n[4/5] Results comparison:")

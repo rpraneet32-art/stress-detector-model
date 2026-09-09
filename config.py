@@ -45,7 +45,15 @@ if ENV == "kaggle":
 
 else:  # local
     _REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
-    RAW_DATA_ROOT      = os.path.join(_REPO_ROOT, "data", "raw", "WESAD")
+    _LOCAL_CANDIDATES = [
+        r"D:\WESAD\WESAD",
+        r"D:\WESAD",
+        os.path.join(_REPO_ROOT, "data", "raw", "WESAD"),
+    ]
+    RAW_DATA_ROOT = next(
+        (p for p in _LOCAL_CANDIDATES if os.path.exists(p) and any(os.path.exists(os.path.join(p, f"S{s}")) for s in [2, 3])),
+        os.path.join(_REPO_ROOT, "data", "raw", "WESAD"),
+    )
     PROCESSED_DATA_DIR = os.path.join(_REPO_ROOT, "data", "processed")
     CHECKPOINT_DIR     = os.path.join(_REPO_ROOT, "checkpoints")
     LOGS_DIR           = os.path.join(_REPO_ROOT, "logs")

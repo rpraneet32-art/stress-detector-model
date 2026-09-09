@@ -246,10 +246,10 @@ def generate_report(results_path: str = None) -> str:
 
     # Save report
     report_path = os.path.join(OUTPUTS_DIR, "report.md")
-    with open(report_path, "w") as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         f.writelines(lines)
 
-    print(f"Report saved → {report_path}")
+    print(f"Report saved -> {report_path}")
     return report_path
 
 
