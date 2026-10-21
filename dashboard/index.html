@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimodal Wearable Stress Monitor | Telemedicine Gateway</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #070B13;
+            --bg-surface: #0E1626;
+            --bg-card: rgba(18, 28, 48, 0.7);
+            --border-card: rgba(56, 189, 248, 0.15);
+            --border-glow: rgba(56, 189, 248, 0.4);
+            
+            --text-main: #F1F5F9;
+            --text-muted: #94A3B8;
+            --text-sub: #64748B;
+            
+            --cyan-glow: #06B6D4;
+            --pink-glow: #EC4899;
+            --amber-glow: #F59E0B;
+            --emerald-glow: #10B981;
+            --crimson-glow: #EF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 20%, rgba(236, 72, 153, 0.06) 0%, transparent 45%),
+                radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
+        }
+
+        /* Top Header */
+        header {
+            padding: 1.2rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-card);
+            background: rgba(14, 22, 38, 0.8);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--cyan-glow), #3B82F6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+        }
+
+        .brand-icon svg {
+            width: 26px;
+            height: 26px;
+            fill: white;
+        }
+
+        .brand-text h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(90deg, #FFFFFF, #93C5FD);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-text p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .telemetry-status {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.9rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--emerald-glow);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: currentColor;
+            box-shadow: 0 0 8px currentColor;
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.7; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.7; }
+        }
+
+        /* Main Container Layout */
+        main {
+            flex: 1;
+            padding: 1.8rem 2.5rem;
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 1.8rem;
+        }
+
+        /* Left Column: Biosignal Waveforms */
+        .waveforms-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .panel-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.25s ease;
+        }
+
+        .panel-card:hover {
+            border-color: var(--border-glow);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .channel-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .tag-ecg { background: rgba(6, 182, 212, 0.15); color: var(--cyan-glow); border: 1px solid rgba(6, 182, 212, 0.3); }
+        .tag-ppg { background: rgba(236, 72, 153, 0.15); color: var(--pink-glow); border: 1px solid rgba(236, 72, 153, 0.3); }
+        .tag-temp { background: rgba(245, 158, 11, 0.15); color: var(--amber-glow); border: 1px solid rgba(245, 158, 11, 0.3); }
+
+        .stat-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .stat-val b {
+            color: var(--text-main);
+        }
+
+        .canvas-container {
+            width: 100%;
+            height: 110px;
+            background: rgba(7, 11, 19, 0.7);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Right Column: AI Inference & Telemedicine */
+        .inference-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .gauge-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 2rem 1.5rem;
+        }
+
+        .gauge-wrapper {
+            position: relative;
+            width: 210px;
+            height: 210px;
+            margin: 1rem 0;
+        }
+
+        .gauge-svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .gauge-track {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.06);
+            stroke-width: 14;
+        }
+
+        .gauge-fill {
+            fill: none;
+            stroke: var(--emerald-glow);
+            stroke-width: 14;
+            stroke-linecap: round;
+            stroke-dasharray: 565;
+            stroke-dashoffset: 565;
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.5s ease;
+            filter: drop-shadow(0 0 10px var(--emerald-glow));
+        }
+
+        .gauge-inner-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .prob-percent {
+            font-size: 2.7rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1;
+            letter-spacing: -0.04em;
+        }
+
+        .prob-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.3rem;
+        }
+
+        .status-pill {
+            padding: 0.6rem 1.4rem;
+            border-radius: 9999px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-top: 0.8rem;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--emerald-glow);
+            color: var(--emerald-glow);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .status-pill.stressed {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--crimson-glow);
+            color: var(--crimson-glow);
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.35);
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+
+        .mini-metric {
+            background: rgba(7, 11, 19, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+        }
+
+        .mini-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .mini-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Controls Panel */
+        .controls-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-card);
+            color: var(--text-main);
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--cyan-glow);
+            color: var(--cyan-glow);
+        }
+
+        footer {
+            padding: 1rem 2.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            border-top: 1px solid var(--border-card);
+            background: rgba(14, 22, 38, 0.5);
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            </div>
+            <div class="brand-text">
+                <h1>Multimodal Stress Telemetry Gateway</h1>
+                <p>100% Pure Real-Time Telemetry &bull; ESP32 Hardware Stream (COM5) &bull; ST-GCN ONNX Edge Engine</p>
+            </div>
+        </div>
+
+        <div class="telemetry-status">
+            <div class="badge" id="conn-badge">
+                <span class="pulse-dot" id="conn-dot"></span>
+                <span id="conn-text">STREAMING (128 Hz)</span>
+            </div>
+            <div class="stat-val">Latency: <b id="latency-text">-- ms</b></div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Left: Real-Time Biosignal Oscilloscopes -->
+        <div class="waveforms-col">
+            <!-- ECG Waveform -->
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="channel-tag tag-ecg">CH 1 &bull; ECG</span>
+                        <span>AD8232 Lead-I Electrocardiogram (128 Hz)</span>
+                    </div>
+                    <div class="stat-val">Heart Rate: <b id="hr-stat" style="color: #06B6D4;">-- BPM</b> &bull; R-R: <b id="rr-stat">Measuring...</b></div>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="canvas-ecg"></canvas>
+                </div>
+            </div>
+
+            <!-- PPG Waveform -->
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="channel-tag tag-ppg">CH 2 &bull; PPG</span>
+                        <span>MAX30102 Optical Blood Volume Pulse (128 Hz)</span>
+                    </div>
+                    <div class="stat-val">Perfusion Status: <b id="ppg-stat" style="color: #EC4899;">Measuring...</b></div>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="canvas-ppg"></canvas>
+                </div>
+            </div>
+
+            <!-- Skin Temp Waveform -->
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="channel-tag tag-temp">CH 3 &bull; TEMP</span>
+                        <span>DS18B20 Peripheral Skin Temperature (1-Wire @ 2 Hz)</span>
+                    </div>
+                    <div class="stat-val">Skin Temp: <b id="temp-stat" style="color: #F59E0B;">-- °C</b> (<span id="temp-desc" style="color: var(--text-muted);">Awaiting probe</span>)</div>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="canvas-temp"></canvas>
+                </div>
+            </div>
+
+            <!-- Real-Time Metrics Strip -->
+            <div class="metrics-grid">
+                <div class="mini-metric">
+                    <div class="mini-label">TELEMETRY INGESTION MODE</div>
+                    <div class="mini-val" style="color: #10B981;" id="diag-mode">100% Pure Real-Time</div>
+                </div>
+                <div class="mini-metric">
+                    <div class="mini-label">TOTAL PACKETS INGESTED</div>
+                    <div class="mini-val" style="color: #38BDF8;" id="diag-pkts">0 (128 Hz)</div>
+                </div>
+                <div class="mini-metric">
+                    <div class="mini-label">RAW ADC / SENSOR COUNTS</div>
+                    <div class="mini-val" style="color: #F59E0B;" id="diag-raw">ECG: -- | PPG: --</div>
+                </div>
+                <div class="mini-metric">
+                    <div class="mini-label">LEAD-OFF SAFETY INTERLOCK</div>
+                    <div class="mini-val" id="diag-lead" style="color: var(--emerald-glow);">ACTIVE [CONNECTED]</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: AI Stress Probability & Telemedicine Alert -->
+        <div class="inference-col">
+            <div class="panel-card gauge-card">
+                <div class="panel-title" style="margin-bottom: 0.5rem;">AUTONOMIC NERVOUS STATE</div>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Real-time Sympathetic Arousal Probability</p>
+
+                <div class="gauge-wrapper">
+                    <svg class="gauge-svg" viewBox="0 0 200 200">
+                        <circle class="gauge-track" cx="100" cy="100" r="88" />
+                        <circle class="gauge-fill" id="gauge-circle" cx="100" cy="100" r="88" />
+                    </svg>
+                    <div class="gauge-inner-text">
+                        <div class="prob-percent" id="prob-num">0%</div>
+                        <div class="prob-label">P(STRESS)</div>
+                    </div>
+                </div>
+
+                <div class="status-pill" id="status-pill">INITIALIZING SENSORS...</div>
+
+                <div style="margin-top: 1.5rem; width: 100%; border-top: 1px solid var(--border-card); padding-top: 1.2rem; font-size: 0.82rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+                    <span>Source: <b id="truth-text" style="color: #10B981;">ESP32 Dev Module</b></span>
+                    <span>Prediction: <b id="pred-text" style="color: var(--text-main);">Calm</b></span>
+                </div>
+            </div>
+
+            <!-- Telemedicine Controls -->
+            <div class="panel-card controls-card">
+                <div class="panel-title" style="font-size: 0.9rem;">EVALUATOR HARDWARE CONTROLS</div>
+                <button class="btn" id="btn-toggle-stream">Pause Live Stream</button>
+                <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px dashed var(--border-card);">
+                    <b>Lead-Off Safety Interlock:</b> Detaching any ECG electrode triggers the onboard hardware safety interlock, automatically halting stress classification until leads are securely restored.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        Multimodal Wearable Stress Telemetry Node &bull; Praneet Raj (25BCE2280), Aarav Shukla (25BCE0707), Saanvy Panda (25BCE2180) &bull; Guide: Dr. Vivek Rajpoot
+    </footer>
+
+    <script>
+        // Setup Real-Time Canvas Oscilloscopes
+        const ecgCanvas = document.getElementById('canvas-ecg');
+        const ppgCanvas = document.getElementById('canvas-ppg');
+        const tempCanvas = document.getElementById('canvas-temp');
+
+        const ecgCtx = ecgCanvas.getContext('2d');
+        const ppgCtx = ppgCanvas.getContext('2d');
+        const tempCtx = tempCanvas.getContext('2d');
+
+        function resizeCanvases() {
+            [ecgCanvas, ppgCanvas, tempCanvas].forEach(c => {
+                c.width = c.parentElement.clientWidth * window.devicePixelRatio;
+                c.height = c.parentElement.clientHeight * window.devicePixelRatio;
+            });
+        }
+        window.addEventListener('resize', resizeCanvases);
+        resizeCanvases();
+
+        function drawWaveform(ctx, points, color, glowColor, baselineOffset = 0.5) {
+            const w = ctx.canvas.width;
+            const h = ctx.canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            if (!points || points.length === 0) return;
+
+            // Draw subtle background gridlines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < w; x += 40) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+            }
+
+            // Normalize points
+            const min = Math.min(...points);
+            const max = Math.max(...points);
+            const range = (max - min) || 1.0;
+
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2.5 * window.devicePixelRatio;
+            ctx.shadowColor = glowColor;
+            ctx.shadowBlur = 10;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            for (let i = 0; i < points.length; i++) {
+                const x = (i / (points.length - 1)) * w;
+                const normY = (points[i] - min) / range;
+                const y = h - (normY * (h * 0.75) + h * 0.12);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+
+        // Dynamic UI Elements
+        const circumference = 2 * Math.PI * 88; // ~552.9
+        const gaugeCircle = document.getElementById('gauge-circle');
+        const probNum = document.getElementById('prob-num');
+        const statusPill = document.getElementById('status-pill');
+        const latencyText = document.getElementById('latency-text');
+        const truthText = document.getElementById('truth-text');
+        const predText = document.getElementById('pred-text');
+        const hrStat = document.getElementById('hr-stat');
+        const rrStat = document.getElementById('rr-stat');
+        const ppgStat = document.getElementById('ppg-stat');
+        const tempStat = document.getElementById('temp-stat');
+        const tempDesc = document.getElementById('temp-desc');
+        const diagPkts = document.getElementById('diag-pkts');
+        const diagRaw = document.getElementById('diag-raw');
+        const diagLead = document.getElementById('diag-lead');
+        const connBadge = document.getElementById('conn-badge');
+        const connDot = document.getElementById('conn-dot');
+        const connText = document.getElementById('conn-text');
+
+        function updateGauge(prob, isLive, prediction) {
+            if (!isLive) {
+                probNum.textContent = '0%';
+                gaugeCircle.style.strokeDashoffset = circumference;
+                gaugeCircle.style.stroke = '#64748B';
+                statusPill.className = 'status-pill';
+                statusPill.style.color = '#94A3B8';
+                statusPill.style.borderColor = '#475569';
+                statusPill.style.background = 'rgba(71, 85, 105, 0.2)';
+                statusPill.textContent = 'AWAITING HARDWARE (COM5)...';
+                return;
+            }
+
+            probNum.textContent = `${Math.round(prob)}%`;
+            const offset = circumference - (prob / 100) * circumference;
+            gaugeCircle.style.strokeDashoffset = offset;
+
+            if (prediction === 'Leads Detached') {
+                gaugeCircle.style.stroke = '#EF4444';
+                statusPill.className = 'status-pill stressed';
+                statusPill.textContent = 'SAFETY HALT: LEADS DETACHED';
+            } else if (prob >= 60) {
+                gaugeCircle.style.stroke = '#EF4444';
+                statusPill.className = 'status-pill stressed';
+                statusPill.textContent = 'ACUTE MENTAL STRESS';
+            } else if (prob >= 35) {
+                gaugeCircle.style.stroke = '#F59E0B';
+                statusPill.className = 'status-pill';
+                statusPill.style.color = '#F59E0B';
+                statusPill.style.borderColor = '#F59E0B';
+                statusPill.style.background = 'rgba(245, 158, 11, 0.15)';
+                statusPill.textContent = 'ELEVATED SYMPATHETIC TONE';
+            } else {
+                gaugeCircle.style.stroke = '#10B981';
+                statusPill.className = 'status-pill';
+                statusPill.style.color = '#10B981';
+                statusPill.style.borderColor = '#10B981';
+                statusPill.style.background = 'rgba(16, 185, 129, 0.15)';
+                statusPill.textContent = 'CALM / HOMEOSTASIS';
+            }
+        }
+
+        // Connect WebSocket Stream
+        let ws;
+        let isStreaming = true;
+
+        function connectWebSocket() {
+            const loc = window.location;
+            const wsUri = (loc.protocol === 'https:' ? 'wss://' : 'ws://') + loc.host + '/ws/telemetry';
+            ws = new WebSocket(wsUri);
+
+            ws.onopen = () => {
+                connText.textContent = 'CONNECTING TO HARDWARE...';
+            };
+
+            ws.onmessage = (event) => {
+                if (!isStreaming) return;
+                const data = JSON.parse(event.data);
+
+                // Update Waveforms
+                drawWaveform(ecgCtx, data.ecg_points, '#06B6D4', 'rgba(6, 182, 212, 0.6)');
+                drawWaveform(ppgCtx, data.ppg_points, '#EC4899', 'rgba(236, 72, 153, 0.6)');
+                drawWaveform(tempCtx, data.temp_points, '#F59E0B', 'rgba(245, 158, 11, 0.6)');
+
+                // Update Gauge and Inference Status
+                updateGauge(data.stress_probability, data.is_live_hardware, data.prediction);
+                latencyText.textContent = data.is_live_hardware ? `${data.latency_ms.toFixed(2)} ms` : '-- ms';
+                truthText.textContent = data.source;
+                predText.textContent = data.prediction;
+
+                // Update Real Live Biosignal Indicators
+                if (hrStat) hrStat.textContent = data.live_hr || '-- BPM';
+                if (rrStat) rrStat.textContent = data.live_rr || 'Measuring...';
+                if (ppgStat) ppgStat.textContent = data.ppg_status || 'Measuring...';
+                if (tempStat) tempStat.textContent = data.current_temp_c || '-- °C';
+                if (tempDesc) tempDesc.textContent = data.temp_desc || '';
+
+                // Update Real Raw Telemetry Diagnostics Bar
+                if (diagPkts) diagPkts.textContent = `${(data.packets_count || 0).toLocaleString()} (128 Hz)`;
+                if (diagRaw) diagRaw.textContent = `ECG: ${data.raw_ecg ?? '--'} | PPG: ${data.raw_ppg ?? '--'}`;
+                if (diagLead) {
+                    if (data.lead_status === 'CONNECTED') {
+                        diagLead.textContent = 'ACTIVE [CONNECTED]';
+                        diagLead.style.color = '#10B981';
+                    } else {
+                        diagLead.textContent = 'INTERLOCK [LEADS DETACHED]';
+                        diagLead.style.color = '#EF4444';
+                    }
+                }
+
+                // Update Connection Badge
+                if (data.is_live_hardware) {
+                    connText.textContent = data.source;
+                    connDot.style.background = '#10B981';
+                    connDot.style.boxShadow = '0 0 12px #10B981';
+                    connBadge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                } else {
+                    connText.textContent = 'HARDWARE DISCONNECTED (Connect ESP32)';
+                    connDot.style.background = '#EF4444';
+                    connDot.style.boxShadow = '0 0 10px #EF4444';
+                    connBadge.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                }
+            };
+
+            ws.onclose = () => {
+                connText.textContent = 'DISCONNECTED (RECONNECTING...)';
+                connDot.style.background = '#EF4444';
+                setTimeout(connectWebSocket, 1500);
+            };
+        }
+
+        connectWebSocket();
+
+        // Button Controls
+        const btnToggle = document.getElementById('btn-toggle-stream');
+        btnToggle.addEventListener('click', () => {
+            isStreaming = !isStreaming;
+            btnToggle.textContent = isStreaming ? 'Pause Live Stream' : 'Resume Live Stream';
+        });
+    </script>
+</body>
+</html>
