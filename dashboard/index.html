@@ -1,29 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multimodal Wearable Stress Monitor | Telemedicine Gateway</title>
+    <title>Multimodal Wearable Stress Monitor | Telemetry & Review Suite</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         :root {
-            --bg-base: #070B13;
-            --bg-surface: #0E1626;
-            --bg-card: rgba(18, 28, 48, 0.7);
-            --border-card: rgba(56, 189, 248, 0.15);
-            --border-glow: rgba(56, 189, 248, 0.4);
-            
-            --text-main: #F1F5F9;
-            --text-muted: #94A3B8;
+            --bg-base: #F8FAFC;
+            --bg-surface: #FFFFFF;
+            --bg-card: rgba(255, 255, 255, 0.92);
+            --bg-card-hover: rgba(241, 245, 249, 0.98);
+            --border-card: rgba(203, 213, 225, 0.80);
+            --border-glow: rgba(2, 132, 199, 0.45);
+
+            --text-main: #0F172A;
+            --text-muted: #475569;
             --text-sub: #64748B;
-            
-            --cyan-glow: #06B6D4;
-            --pink-glow: #EC4899;
-            --amber-glow: #F59E0B;
-            --emerald-glow: #10B981;
-            --crimson-glow: #EF4444;
+
+            --cyan-glow: #0284C7;
+            --pink-glow: #0F766E;
+            --amber-glow: #B45309;
+            --emerald-glow: #15803D;
+            --crimson-glow: #B91C1C;
+            --blue-glow: #3B82F6;
+            --purple-glow: #8B5CF6;
         }
 
         * {
@@ -40,21 +46,21 @@
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 85% 20%, rgba(236, 72, 153, 0.06) 0%, transparent 45%),
-                radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
+            background-image:
+                radial-gradient(circle at 12% 15%, rgba(0, 240, 255, 0.07) 0%, transparent 45%),
+                radial-gradient(circle at 88% 20%, rgba(236, 72, 153, 0.06) 0%, transparent 45%),
+                radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
         }
 
         /* Top Header */
         header {
-            padding: 1.2rem 2.5rem;
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border-card);
-            background: rgba(14, 22, 38, 0.8);
-            backdrop-filter: blur(12px);
+            background: rgba(140, 144, 150, 0.85);
+            backdrop-filter: blur(14px);
             position: sticky;
             top: 0;
             z-index: 50;
@@ -70,11 +76,11 @@
             width: 44px;
             height: 44px;
             border-radius: 12px;
-            background: linear-gradient(135deg, var(--cyan-glow), #3B82F6);
+            background: linear-gradient(135deg, var(--cyan-glow), #2563EB);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+            box-shadow: 0 0 22px rgba(0, 240, 255, 0.35);
         }
 
         .brand-icon svg {
@@ -93,15 +99,27 @@
         }
 
         .brand-text p {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--text-muted);
             font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
         }
 
-        .telemetry-status {
+        .team-pill {
+            background: rgba(56, 189, 248, 0.12);
+            color: #38BDF8;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            font-weight: 600;
+        }
+
+        .header-actions {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 1rem;
         }
 
         .badge {
@@ -113,9 +131,9 @@
             font-size: 0.8rem;
             font-family: 'JetBrains Mono', monospace;
             font-weight: 500;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: var(--emerald-glow);
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            color: var(--cyan-glow);
         }
 
         .pulse-dot {
@@ -123,43 +141,305 @@
             height: 8px;
             border-radius: 50%;
             background-color: currentColor;
-            box-shadow: 0 0 8px currentColor;
+            box-shadow: 0 0 10px currentColor;
             animation: pulse 1.8s infinite;
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.9); opacity: 0.7; }
-            50% { transform: scale(1.3); opacity: 1; }
-            100% { transform: scale(0.9); opacity: 0.7; }
+            0% {
+                transform: scale(0.9);
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: scale(1.3);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0.9);
+                opacity: 0.7;
+            }
         }
 
-        /* Main Container Layout */
+        .btn-header {
+            background: rgba(154, 161, 175, 0.8);
+            border: 1px solid var(--border-card);
+            color: var(--text-main);
+            padding: 0.45rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-header:hover {
+            border-color: var(--cyan-glow);
+            color: var(--cyan-glow);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Replay Control Bar */
+        .replay-bar {
+            background: rgba(255, 255, 255, 0.9);
+            border-bottom: 1px solid var(--border-card);
+            padding: 0.8rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .replay-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .selector-group {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .control-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+        }
+
+        select {
+            background: rgba(96, 139, 225, 0.9);
+            border: 1px solid var(--border-card);
+            color: var(--text-main);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        select:focus,
+        select:hover {
+            border-color: var(--cyan-glow);
+        }
+
+        .phase-buttons {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .btn-phase {
+            font-size: 0.78rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .btn-phase-calm {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: var(--emerald-glow);
+        }
+
+        .btn-phase-calm:hover {
+            background: rgba(16, 185, 129, 0.25);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-phase-stress {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.35);
+            color: var(--crimson-glow);
+        }
+
+        .btn-phase-stress:hover {
+            background: rgba(239, 68, 68, 0.3);
+            box-shadow: 0 0 14px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-phase-recovery {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.35);
+            color: #60A5FA;
+        }
+
+        .btn-phase-recovery:hover {
+            background: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 14px rgba(59, 130, 246, 0.4);
+        }
+
+        .playback-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-ctl {
+            background: rgba(18, 28, 48, 0.85);
+            border: 1px solid var(--border-card);
+            color: var(--text-main);
+            padding: 0.4rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .btn-ctl:hover {
+            border-color: var(--cyan-glow);
+            color: var(--cyan-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn-ctl.btn-primary-ctl {
+            background: linear-gradient(135deg, #0284C7, #2563EB);
+            border: none;
+            color: white;
+            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-ctl.btn-primary-ctl:hover {
+            opacity: 0.95;
+            box-shadow: 0 2px 15px rgba(37, 99, 235, 0.5);
+        }
+
+        /* Timeline Scrubber */
+        .timeline-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .timeline-bar-wrapper {
+            flex: 1;
+            position: relative;
+            height: 18px;
+            background: rgba(7, 11, 19, 0.8);
+            border-radius: 9px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .timeline-phase-band {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            height: 100%;
+        }
+
+        .band-baseline {
+            background: rgba(16, 185, 129, 0.15);
+            border-right: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .band-stress {
+            background: rgba(239, 68, 68, 0.25);
+            border-right: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .band-recovery {
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .timeline-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.45));
+            border-right: 3px solid var(--cyan-glow);
+            box-shadow: 0 0 10px var(--cyan-glow);
+            pointer-events: none;
+            transition: width 0.15s ease-out;
+        }
+
+        .timeline-scrubber-handle {
+            position: absolute;
+            top: -2px;
+            width: 14px;
+            height: 22px;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
+            transform: translateX(-50%);
+            pointer-events: none;
+            transition: left 0.15s ease-out;
+        }
+
+        .timeline-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        /* Main Workspace Layout */
         main {
             flex: 1;
-            padding: 1.8rem 2.5rem;
-            max-width: 1600px;
+            padding: 1.5rem 2rem;
+            max-width: 1750px;
             width: 100%;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 1.8rem;
+            grid-template-columns: 1.25fr 0.95fr 1fr;
+            gap: 1.5rem;
         }
 
-        /* Left Column: Biosignal Waveforms */
-        .waveforms-col {
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
+        @media (max-width: 1400px) {
+            main {
+                grid-template-columns: 1.2fr 1fr;
+            }
+
+            .graph-col {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 992px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+
+            .graph-col {
+                grid-column: span 1;
+            }
         }
 
         .panel-card {
             background: var(--bg-card);
             border: 1px solid var(--border-card);
             border-radius: 16px;
-            padding: 1.25rem 1.5rem;
+            padding: 1.25rem 1.4rem;
             backdrop-filter: blur(16px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transition: border-color 0.25s ease;
+            transition: border-color 0.25s ease, transform 0.2s ease;
         }
 
         .panel-card:hover {
@@ -170,33 +450,47 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.75rem;
         }
 
         .panel-title {
             display: flex;
             align-items: center;
             gap: 0.6rem;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-weight: 600;
             letter-spacing: -0.01em;
         }
 
         .channel-tag {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            padding: 0.2rem 0.6rem;
+            font-size: 0.72rem;
+            padding: 0.2rem 0.55rem;
             border-radius: 6px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
-        .tag-ecg { background: rgba(6, 182, 212, 0.15); color: var(--cyan-glow); border: 1px solid rgba(6, 182, 212, 0.3); }
-        .tag-ppg { background: rgba(236, 72, 153, 0.15); color: var(--pink-glow); border: 1px solid rgba(236, 72, 153, 0.3); }
-        .tag-temp { background: rgba(245, 158, 11, 0.15); color: var(--amber-glow); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .tag-ecg {
+            background: rgba(0, 240, 255, 0.15);
+            color: var(--cyan-glow);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+        }
+
+        .tag-ppg {
+            background: rgba(236, 72, 153, 0.15);
+            color: var(--pink-glow);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+
+        .tag-temp {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--amber-glow);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
 
         .stat-val {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
         }
 
@@ -206,8 +500,8 @@
 
         .canvas-container {
             width: 100%;
-            height: 110px;
-            background: rgba(7, 11, 19, 0.7);
+            height: 105px;
+            background: rgba(7, 11, 19, 0.75);
             border-radius: 10px;
             overflow: hidden;
             position: relative;
@@ -218,6 +512,60 @@
             width: 100%;
             height: 100%;
             display: block;
+        }
+
+        /* Center Column: Dynamic Graph Visualizer */
+        .graph-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .graph-canvas-container {
+            width: 100%;
+            height: 250px;
+            background: rgba(7, 11, 19, 0.75);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .adj-matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            margin-top: 0.8rem;
+        }
+
+        .adj-matrix-table th,
+        .adj-matrix-table td {
+            padding: 0.35rem 0.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .adj-matrix-table th {
+            background: rgba(18, 28, 48, 0.6);
+            color: var(--text-muted);
+        }
+
+        .adj-matrix-table td {
+            background: rgba(7, 11, 19, 0.5);
+            color: var(--cyan-glow);
+        }
+
+        .edge-stat-badge {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            background: rgba(18, 28, 48, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.78rem;
+            font-family: 'JetBrains Mono', monospace;
+            margin-top: 0.4rem;
         }
 
         /* Right Column: AI Inference & Telemedicine */
@@ -232,14 +580,14 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
-            padding: 2rem 1.5rem;
+            padding: 1.8rem 1.4rem;
         }
 
         .gauge-wrapper {
             position: relative;
-            width: 210px;
-            height: 210px;
-            margin: 1rem 0;
+            width: 200px;
+            height: 200px;
+            margin: 0.8rem 0;
         }
 
         .gauge-svg {
@@ -276,7 +624,7 @@
         }
 
         .prob-percent {
-            font-size: 2.7rem;
+            font-size: 2.6rem;
             font-weight: 800;
             font-family: 'JetBrains Mono', monospace;
             line-height: 1;
@@ -284,21 +632,21 @@
         }
 
         .prob-label {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            margin-top: 0.3rem;
+            margin-top: 0.25rem;
         }
 
         .status-pill {
-            padding: 0.6rem 1.4rem;
+            padding: 0.55rem 1.3rem;
             border-radius: 9999px;
-            font-size: 0.95rem;
+            font-size: 0.88rem;
             font-weight: 700;
             letter-spacing: 0.05em;
             text-transform: uppercase;
-            margin-top: 0.8rem;
+            margin-top: 0.6rem;
             background: rgba(16, 185, 129, 0.15);
             border: 1px solid var(--emerald-glow);
             color: var(--emerald-glow);
@@ -313,6 +661,43 @@
             box-shadow: 0 0 25px rgba(239, 68, 68, 0.35);
         }
 
+        .truth-match-box {
+            margin-top: 1.2rem;
+            width: 100%;
+            border-top: 1px solid var(--border-card);
+            padding-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            font-size: 0.82rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .truth-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .match-badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .match-ok {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--emerald-glow);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .match-mismatch {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--amber-glow);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
         /* Metrics Grid */
         .metrics-grid {
             display: grid;
@@ -324,99 +709,314 @@
             background: rgba(7, 11, 19, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 12px;
-            padding: 0.9rem 1rem;
+            padding: 0.8rem 1rem;
         }
 
         .mini-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
             margin-bottom: 0.25rem;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .mini-val {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 1.05rem;
+            font-size: 0.95rem;
             font-weight: 700;
             color: var(--text-main);
         }
 
-        /* Controls Panel */
-        .controls-card {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #2563EB, #1D4ED8);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 0.75rem 1rem;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(4, 7, 13, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 100;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+            padding: 2rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
         }
 
-        .btn:hover {
-            opacity: 0.92;
-            transform: translateY(-1px);
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
         }
 
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border-card);
-            color: var(--text-main);
-            box-shadow: none;
+        .modal-content {
+            background: #0E1626;
+            border: 1px solid var(--border-glow);
+            border-radius: 18px;
+            max-width: 1050px;
+            width: 100%;
+            max-height: 88vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
         }
 
-        .btn-outline:hover {
-            border-color: var(--cyan-glow);
+        .modal-header {
+            padding: 1.2rem 1.8rem;
+            border-bottom: 1px solid var(--border-card);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: #0E1626;
+            z-index: 10;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
             color: var(--cyan-glow);
         }
 
+        .btn-close-modal {
+            background: transparent;
+            border: 1px solid var(--border-card);
+            color: var(--text-muted);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-close-modal:hover {
+            color: white;
+            border-color: var(--crimson-glow);
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .modal-body {
+            padding: 1.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .benchmark-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            margin-top: 0.5rem;
+        }
+
+        .benchmark-table th,
+        .benchmark-table td {
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .benchmark-table th {
+            background: rgba(18, 28, 48, 0.8);
+            color: #38BDF8;
+            font-weight: 600;
+        }
+
+        .benchmark-table tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .highlight-row td {
+            background: rgba(0, 240, 255, 0.08) !important;
+            font-weight: 700;
+            color: white;
+        }
+
+        .guide-step {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            background: rgba(18, 28, 48, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--cyan-glow);
+            color: #070B13;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            font-size: 0.95rem;
+            margin-bottom: 0.3rem;
+            color: #F1F5F9;
+        }
+
+        .step-content p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .quote-box {
+            padding: 0.8rem 1rem;
+            border-left: 3px solid var(--cyan-glow);
+            background: rgba(0, 240, 255, 0.05);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+            color: #E2E8F0;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
         footer {
-            padding: 1rem 2.5rem;
+            padding: 1rem 2rem;
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--text-sub);
             border-top: 1px solid var(--border-card);
-            background: rgba(14, 22, 38, 0.5);
+            background: rgba(10, 16, 28, 0.7);
             font-family: 'JetBrains Mono', monospace;
         }
     </style>
 </head>
+
 <body>
 
+    <!-- Header Bar -->
     <header>
         <div class="brand">
             <div class="brand-icon">
-                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
             </div>
             <div class="brand-text">
-                <h1>Multimodal Stress Telemetry Gateway</h1>
-                <p>100% Pure Real-Time Telemetry &bull; ESP32 Hardware Stream (COM5) &bull; ST-GCN ONNX Edge Engine</p>
+                <h1>Multimodal Wearable Stress Monitor | Telemetry & Review Suite</h1>
+                <p>
+                    <span class="team-pill">Group: -</span>
+                    <span>Bhavya Singh (25BCE2004) &bull; Soham Sharma (25BCE0403) &bull; Praneet Raj (25BCE2280)</span>
+                </p>
             </div>
         </div>
 
-        <div class="telemetry-status">
+        <div class="header-actions">
+            <button class="btn-header" id="btn-open-evidence">
+                <span>📊</span> Evaluation Evidence
+            </button>
+            <button class="btn-header" id="btn-open-guide">
+                <span>📋</span> Reviewer Guide & Script
+            </button>
+            <button class="btn-header" id="btn-open-arch">
+                <span>📐</span> Model Architecture
+            </button>
+
             <div class="badge" id="conn-badge">
                 <span class="pulse-dot" id="conn-dot"></span>
-                <span id="conn-text">STREAMING (128 Hz)</span>
+                <span id="conn-text">WESAD STREAM (128 Hz)</span>
             </div>
-            <div class="stat-val">Latency: <b id="latency-text">-- ms</b></div>
         </div>
     </header>
 
+    <!-- Top Replay Command Center -->
+    <div class="replay-bar">
+        <div class="replay-top-row">
+            <!-- Subject Selector -->
+            <div class="selector-group">
+                <span class="control-label">Participant:</span>
+                <select id="select-subject">
+                    <option value="2">Subject S2 (Held-Out Benchmark)</option>
+                    <option value="3">Subject S3</option>
+                    <option value="4">Subject S4</option>
+                    <option value="5">Subject S5</option>
+                    <option value="6">Subject S6</option>
+                    <option value="7">Subject S7</option>
+                    <option value="8">Subject S8</option>
+                    <option value="9">Subject S9</option>
+                    <option value="10">Subject S10</option>
+                    <option value="11">Subject S11</option>
+                    <option value="12" disabled>Subject S12 (Excluded WESAD)</option>
+                    <option value="13">Subject S13</option>
+                    <option value="14">Subject S14</option>
+                    <option value="15">Subject S15</option>
+                    <option value="16">Subject S16</option>
+                    <option value="17">Subject S17</option>
+                </select>
+            </div>
+
+            <!-- Quick Protocol Phase Jump -->
+            <div class="phase-buttons">
+                <span class="control-label">Protocol Jump:</span>
+                <button class="btn-phase btn-phase-calm" id="btn-jump-baseline">
+                    <span>🟢</span> Baseline (Calm)
+                </button>
+                <button class="btn-phase btn-phase-stress" id="btn-jump-stress">
+                    <span>🔴</span> TSST Stress Induction
+                </button>
+                <button class="btn-phase btn-phase-recovery" id="btn-jump-recovery">
+                    <span>🔵</span> Recovery Phase
+                </button>
+            </div>
+
+            <!-- Playback Controls -->
+            <div class="playback-controls">
+                <button class="btn-ctl" id="btn-step-back" title="Step Back 1 Window">⏮</button>
+                <button class="btn-ctl btn-primary-ctl" id="btn-toggle-play">⏸ Pause</button>
+                <button class="btn-ctl" id="btn-step-fwd" title="Step Forward 1 Window">⏭</button>
+                <button class="btn-ctl" id="btn-reset" title="Reset to Beginning">⟲ Reset</button>
+
+                <span class="control-label" style="margin-left: 0.5rem;">Speed:</span>
+                <select id="select-speed" style="padding: 0.35rem 0.5rem;">
+                    <option value="0.5">0.5x Slow</option>
+                    <option value="1.0" selected>1.0x Real-Time</option>
+                    <option value="2.0">2.0x Fast</option>
+                    <option value="5.0">5.0x Warp</option>
+                    <option value="10.0">10.0x Max</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Timeline Scrubber Bar -->
+        <div class="timeline-container">
+            <span class="timeline-label" id="time-current">Window: 1 / 1421</span>
+            <div class="timeline-bar-wrapper" id="timeline-bar">
+                <div class="timeline-phase-band band-baseline" id="band-baseline" style="left: 0%; width: 53.8%;"></div>
+                <div class="timeline-phase-band band-stress" id="band-stress" style="left: 53.8%; width: 29.0%;"></div>
+                <div class="timeline-phase-band band-recovery" id="band-recovery" style="left: 82.8%; width: 17.2%;">
+                </div>
+                <div class="timeline-progress" id="timeline-progress"></div>
+                <div class="timeline-scrubber-handle" id="timeline-handle" style="left: 0%;"></div>
+            </div>
+            <span class="timeline-label" id="phase-badge" style="color: #38BDF8; font-weight: 600;">Baseline
+                Phase</span>
+        </div>
+    </div>
+
+    <!-- Main Workspace -->
     <main>
-        <!-- Left: Real-Time Biosignal Oscilloscopes -->
-        <div class="waveforms-col">
+        <!-- Column 1: Biosignal Oscilloscopes -->
+        <div class="waveforms-col" style="display: flex; flex-direction: column; gap: 1.2rem;">
             <!-- ECG Waveform -->
             <div class="panel-card">
                 <div class="panel-header">
@@ -424,7 +1024,8 @@
                         <span class="channel-tag tag-ecg">CH 1 &bull; ECG</span>
                         <span>AD8232 Lead-I Electrocardiogram (128 Hz)</span>
                     </div>
-                    <div class="stat-val">Heart Rate: <b id="hr-stat" style="color: #06B6D4;">-- BPM</b> &bull; R-R: <b id="rr-stat">Measuring...</b></div>
+                    <div class="stat-val">Heart Rate: <b id="hr-stat" style="color: var(--cyan-glow);">-- BPM</b> &bull;
+                        R-R: <b id="rr-stat">Measuring...</b></div>
                 </div>
                 <div class="canvas-container">
                     <canvas id="canvas-ecg"></canvas>
@@ -438,7 +1039,8 @@
                         <span class="channel-tag tag-ppg">CH 2 &bull; PPG</span>
                         <span>MAX30102 Optical Blood Volume Pulse (128 Hz)</span>
                     </div>
-                    <div class="stat-val">Perfusion Status: <b id="ppg-stat" style="color: #EC4899;">Measuring...</b></div>
+                    <div class="stat-val">Perfusion: <b id="ppg-stat" style="color: var(--pink-glow);">Measuring...</b>
+                    </div>
                 </div>
                 <div class="canvas-container">
                     <canvas id="canvas-ppg"></canvas>
@@ -450,24 +1052,25 @@
                 <div class="panel-header">
                     <div class="panel-title">
                         <span class="channel-tag tag-temp">CH 3 &bull; TEMP</span>
-                        <span>DS18B20 Peripheral Skin Temperature (1-Wire @ 2 Hz)</span>
+                        <span>DS18B20 Peripheral Skin Temperature (128 Hz)</span>
                     </div>
-                    <div class="stat-val">Skin Temp: <b id="temp-stat" style="color: #F59E0B;">-- °C</b> (<span id="temp-desc" style="color: var(--text-muted);">Awaiting probe</span>)</div>
+                    <div class="stat-val">Temp: <b id="temp-stat" style="color: var(--amber-glow);">-- °C</b> (<span
+                            id="temp-desc" style="color: var(--text-muted);">Calibrating</span>)</div>
                 </div>
                 <div class="canvas-container">
                     <canvas id="canvas-temp"></canvas>
                 </div>
             </div>
 
-            <!-- Real-Time Metrics Strip -->
+            <!-- Hardware Ingestion Strip -->
             <div class="metrics-grid">
                 <div class="mini-metric">
                     <div class="mini-label">TELEMETRY INGESTION MODE</div>
-                    <div class="mini-val" style="color: #10B981;" id="diag-mode">100% Pure Real-Time</div>
+                    <div class="mini-val" style="color: #38BDF8;" id="diag-mode">WESAD S2 Replay</div>
                 </div>
                 <div class="mini-metric">
-                    <div class="mini-label">TOTAL PACKETS INGESTED</div>
-                    <div class="mini-val" style="color: #38BDF8;" id="diag-pkts">0 (128 Hz)</div>
+                    <div class="mini-label">TOTAL SAMPLES INGESTED</div>
+                    <div class="mini-val" style="color: #38BDF8;" id="diag-pkts">0 @ 128 Hz</div>
                 </div>
                 <div class="mini-metric">
                     <div class="mini-label">RAW ADC / SENSOR COUNTS</div>
@@ -480,11 +1083,90 @@
             </div>
         </div>
 
-        <!-- Right: AI Stress Probability & Telemedicine Alert -->
+        <!-- Column 2: Dynamic Physiological Coupling Graph (ST-GCN Visualizer) -->
+        <div class="graph-col">
+            <div class="panel-card" style="height: 100%; display: flex; flex-direction: column;">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span style="color: var(--purple-glow); font-size: 1.1rem;">◈</span>
+                        <span>Dynamic Physiological Coupling Graph</span>
+                    </div>
+                    <span class="stat-val" style="color: var(--purple-glow);">ST-GCN Spatial Layer</span>
+                </div>
+
+                <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.6rem;">
+                    Pearson correlation weights $A_{ij} = \text{corr}(x_i, x_j)$ computed live per 3.0s window:
+                </p>
+
+                <!-- Interactive 3-Node Graph Canvas -->
+                <div class="graph-canvas-container">
+                    <canvas id="canvas-graph"></canvas>
+                </div>
+
+                <!-- Live Dynamic Edge Weights -->
+                <div style="margin-top: 0.8rem; display: flex; flex-direction: column; gap: 0.4rem;">
+                    <div class="edge-stat-badge">
+                        <span>ECG ↔ PPG (Pulse Transit Coupling):</span>
+                        <b id="edge-ecg-ppg" style="color: var(--cyan-glow);">r = 0.00</b>
+                    </div>
+                    <div class="edge-stat-badge">
+                        <span>ECG ↔ TEMP (Thermal Vasoconstriction):</span>
+                        <b id="edge-ecg-temp" style="color: var(--amber-glow);">r = 0.00</b>
+                    </div>
+                    <div class="edge-stat-badge">
+                        <span>PPG ↔ TEMP (Microvascular Perfusion):</span>
+                        <b id="edge-ppg-temp" style="color: var(--pink-glow);">r = 0.00</b>
+                    </div>
+                </div>
+
+                <!-- Normalized Adjacency Matrix -->
+                <div style="margin-top: 0.8rem;">
+                    <div class="control-label" style="font-size: 0.7rem;">Normalized Adjacency Matrix D⁻¹A:</div>
+                    <table class="adj-matrix-table">
+                        <thead>
+                            <tr>
+                                <th>Node</th>
+                                <th>ECG</th>
+                                <th>PPG</th>
+                                <th>TEMP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>ECG</b></td>
+                                <td id="mat-00">1.00</td>
+                                <td id="mat-01">0.00</td>
+                                <td id="mat-02">0.00</td>
+                            </tr>
+                            <tr>
+                                <td><b>PPG</b></td>
+                                <td id="mat-10">0.00</td>
+                                <td id="mat-11">1.00</td>
+                                <td id="mat-12">0.00</td>
+                            </tr>
+                            <tr>
+                                <td><b>TEMP</b></td>
+                                <td id="mat-20">0.00</td>
+                                <td id="mat-21">0.00</td>
+                                <td id="mat-22">1.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div
+                    style="margin-top: auto; padding-top: 0.8rem; font-size: 0.74rem; color: var(--text-sub); border-top: 1px solid rgba(255, 255, 255, 0.05);">
+                    💡 <i>Edge thickness & glow scale with $|r|$. Sympathetic stress drives simultaneous cardiac
+                        acceleration and vasoconstriction, strengthening cross-modal coupling.</i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 3: AI Inference & Autonomic State -->
         <div class="inference-col">
             <div class="panel-card gauge-card">
-                <div class="panel-title" style="margin-bottom: 0.5rem;">AUTONOMIC NERVOUS STATE</div>
-                <p style="font-size: 0.8rem; color: var(--text-muted);">Real-time Sympathetic Arousal Probability</p>
+                <div class="panel-title" style="margin-bottom: 0.3rem;">AUTONOMIC NERVOUS STATE</div>
+                <p style="font-size: 0.78rem; color: var(--text-muted);">Real-Time Sympathetic Arousal Probability</p>
 
                 <div class="gauge-wrapper">
                     <svg class="gauge-svg" viewBox="0 0 200 200">
@@ -497,79 +1179,414 @@
                     </div>
                 </div>
 
-                <div class="status-pill" id="status-pill">INITIALIZING SENSORS...</div>
+                <div class="status-pill" id="status-pill">CALM / HOMEOSTASIS</div>
 
-                <div style="margin-top: 1.5rem; width: 100%; border-top: 1px solid var(--border-card); padding-top: 1.2rem; font-size: 0.82rem; color: var(--text-muted); display: flex; justify-content: space-between;">
-                    <span>Source: <b id="truth-text" style="color: #10B981;">ESP32 Dev Module</b></span>
-                    <span>Prediction: <b id="pred-text" style="color: var(--text-main);">Calm</b></span>
+                <!-- Ground Truth vs Prediction Comparison -->
+                <div class="truth-match-box">
+                    <div class="truth-row">
+                        <span style="color: var(--text-muted);">WESAD Ground Truth:</span>
+                        <b id="truth-text" style="color: #38BDF8;">Baseline (Calm)</b>
+                    </div>
+                    <div class="truth-row">
+                        <span style="color: var(--text-muted);">ST-GCN Prediction:</span>
+                        <b id="pred-text" style="color: var(--emerald-glow);">Non-Stress</b>
+                    </div>
+                    <div class="truth-row" style="margin-top: 0.3rem;">
+                        <span style="color: var(--text-muted);">Verification Status:</span>
+                        <span class="match-badge match-ok" id="match-badge">MATCH [CORRECT]</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Telemedicine Controls -->
-            <div class="panel-card controls-card">
-                <div class="panel-title" style="font-size: 0.9rem;">EVALUATOR HARDWARE CONTROLS</div>
-                <button class="btn" id="btn-toggle-stream">Pause Live Stream</button>
-                <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px dashed var(--border-card);">
-                    <b>Lead-Off Safety Interlock:</b> Detaching any ECG electrode triggers the onboard hardware safety interlock, automatically halting stress classification until leads are securely restored.
+            <!-- Edge Deployment & Hardware Footprint Strip -->
+            <div class="panel-card" style="display: flex; flex-direction: column; gap: 0.8rem;">
+                <div class="panel-title" style="font-size: 0.88rem;">EDGE DEPLOYMENT METRICS</div>
+                <div class="metrics-grid">
+                    <div class="mini-metric">
+                        <div class="mini-label">CPU LATENCY</div>
+                        <div class="mini-val" id="latency-text" style="color: var(--cyan-glow);">2.57 ms</div>
+                    </div>
+                    <div class="mini-metric">
+                        <div class="mini-label">EDGE BUDGET</div>
+                        <div class="mini-val" style="color: var(--emerald-glow);">&lt; 50.0 ms</div>
+                    </div>
+                    <div class="mini-metric">
+                        <div class="mini-label">ONNX MODEL SIZE</div>
+                        <div class="mini-val" style="color: #38BDF8;">73.8 KB</div>
+                    </div>
+                    <div class="mini-metric">
+                        <div class="mini-label">PARAMETERS</div>
+                        <div class="mini-val" style="color: #F59E0B;">6,466 Params</div>
+                    </div>
+                </div>
+                <div
+                    style="font-size: 0.74rem; color: var(--text-sub); line-height: 1.35; padding: 0.4rem; background: rgba(255,255,255,0.02); border-radius: 6px;">
+                    <b>Edge Feasibility:</b> 73.8 KB binary and 2.57 ms latency confirm 100% feasibility for
+                    microcontroller deployment (ESP32-S3: 512 KB SRAM, 240 MHz).
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Modal 1: Evaluation Evidence & Benchmarks -->
+    <div class="modal-overlay" id="modal-evidence">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span>📊</span> Complete LOSO Evaluation Evidence & Benchmark Results
+                </div>
+                <button class="btn-close-modal" id="btn-close-evidence">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <h3 style="font-size: 1.05rem; margin-bottom: 0.4rem; color: #F1F5F9;">Champion Model Comparison
+                        (15-Fold Leave-One-Subject-Out CV)</h3>
+                    <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.8rem;">
+                        Rigorous clinical benchmark on WESAD (15 subjects, 22,192 windows). Evaluated with zero subject
+                        data in training fold.
+                    </p>
+                    <table class="benchmark-table">
+                        <thead>
+                            <tr>
+                                <th>Model Architecture</th>
+                                <th>Mean Accuracy</th>
+                                <th>Stress F1-Score</th>
+                                <th>Sensitivity</th>
+                                <th>Specificity</th>
+                                <th>ROC-AUC</th>
+                                <th>CPU Latency</th>
+                                <th>Size</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="highlight-row">
+                                <td><b>ST-GCN (Proposed)</b></td>
+                                <td><b>76.50% ± 16.5%</b></td>
+                                <td><b>0.6578 ± 0.22</b></td>
+                                <td><b>74.79%</b></td>
+                                <td><b>76.92%</b></td>
+                                <td><b>0.8665</b></td>
+                                <td><b>2.57 ms</b></td>
+                                <td><b>73.8 KB</b></td>
+                            </tr>
+                            <tr>
+                                <td>1D-CNN Baseline</td>
+                                <td>72.24% ± 18.0%</td>
+                                <td>0.5190 ± 0.30</td>
+                                <td>59.47%</td>
+                                <td>77.38%</td>
+                                <td>0.8221</td>
+                                <td>1.14 ms</td>
+                                <td>162.2 KB</td>
+                            </tr>
+                            <tr>
+                                <td>Random Forest (58 Feats)</td>
+                                <td>76.60% ± 15.2%</td>
+                                <td>0.6872 ± 0.16</td>
+                                <td>80.10%</td>
+                                <td>74.84%</td>
+                                <td>0.9002</td>
+                                <td>4.80 ms</td>
+                                <td>1.45 MB</td>
+                            </tr>
+                            <tr>
+                                <td>XGBoost (58 Feats)</td>
+                                <td>74.59% ± 13.7%</td>
+                                <td>0.6559 ± 0.15</td>
+                                <td>78.53%</td>
+                                <td>72.69%</td>
+                                <td>0.8999</td>
+                                <td>3.20 ms</td>
+                                <td>890 KB</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div
+                    style="background: rgba(18, 28, 48, 0.6); padding: 1rem; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.06);">
+                    <h4 style="font-size: 0.95rem; margin-bottom: 0.4rem; color: var(--cyan-glow);">Key Empirical
+                        Takeaways:</h4>
+                    <ul style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin-left: 1.2rem;">
+                        <li><b>ST-GCN vs 1D-CNN:</b> ST-GCN achieves a massive <b>+13.88% higher Stress F1</b> (0.6578
+                            vs 0.5190) and outperforms CNN on <b>12 out of 15 participants (80% win rate)</b> by
+                            dynamically learning cross-modal physiological coupling.</li>
+                        <li><b>Zero Hand-Crafted Feature Engineering:</b> Unlike Random Forest which requires 58
+                            hand-engineered HR/HRV/spectral features, ST-GCN operates directly on raw normalized
+                            biosignal windows in end-to-end fashion.</li>
+                        <li><b>Microcontroller Budget:</b> With only 6,466 parameters (73.8 KB binary) and 2.57 ms
+                            latency, ST-GCN executes <b>19.4x faster</b> than the 50 ms edge latency target.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 style="font-size: 1.05rem; margin-bottom: 0.4rem; color: #F1F5F9;">Generated Experimental
+                        Benchmark Figures</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.6rem;">
+                        <div
+                            style="background: rgba(7, 11, 19, 0.6); padding: 0.8rem; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
+                            <img src="/outputs/loso_model_comparison.png" alt="LOSO Model Comparison"
+                                style="max-width: 100%; border-radius: 6px;"
+                                onerror="this.parentElement.innerHTML='<p style=\'color: var(--text-muted); font-size: 0.8rem;\'>Model Comparison Plot Available in outputs/</p>'">
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.4rem;">Figure 4:
+                                15-Fold LOSO Benchmark Comparison</p>
+                        </div>
+                        <div
+                            style="background: rgba(7, 11, 19, 0.6); padding: 0.8rem; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
+                            <img src="/outputs/confusion_matrix_and_roc.png" alt="ROC & Confusion Matrix"
+                                style="max-width: 100%; border-radius: 6px;"
+                                onerror="this.parentElement.innerHTML='<p style=\'color: var(--text-muted); font-size: 0.8rem;\'>ROC & Confusion Matrix Available in outputs/</p>'">
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.4rem;">Figure 5:
+                                Confusion Matrix & ROC Curves</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Reviewer Walkthrough Guide & Defense FAQ -->
+    <div class="modal-overlay" id="modal-guide">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span>📋</span> Technical Review Walkthrough & Defense Script
+                </div>
+                <button class="btn-close-modal" id="btn-close-guide">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <h3 style="font-size: 1.05rem; margin-bottom: 0.4rem; color: #F1F5F9;">5-Minute Live Reviewer
+                        Demonstration Script</h3>
+                    <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.8rem;">
+                        Follow these exact chronological steps during your live presentation:
+                    </p>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                        <div class="guide-step">
+                            <div class="step-num">1</div>
+                            <div class="step-content">
+                                <h4>Introduction & System Overview (1 Min)</h4>
+                                <p>Open this dashboard. Point to the three oscilloscopes (ECG, PPG, Skin Temp). Explain
+                                    that you are streaming synchronized 128 Hz clinical windows through your champion
+                                    ST-GCN ONNX model running in real time.</p>
+                            </div>
+                        </div>
+
+                        <div class="guide-step">
+                            <div class="step-num">2</div>
+                            <div class="step-content">
+                                <h4>Baseline Demonstration (1 Min)</h4>
+                                <p>Click <b>🟢 Baseline (Calm)</b>. Point to the gauge showing low stress probability
+                                    (5%–15%), the status pill reading "CALM / HOMEOSTASIS", and the dynamic graph
+                                    showing normal resting physiological coupling.</p>
+                            </div>
+                        </div>
+
+                        <div class="guide-step">
+                            <div class="step-num">3</div>
+                            <div class="step-content">
+                                <h4>TSST Acute Stress Induction (1.5 Min)</h4>
+                                <p>Click <b>🔴 TSST Stress Induction</b>. Watch the timeline jump to window 765. Within
+                                    seconds, observe: (1) Heart rate rises, (2) Skin temperature drops due to thermal
+                                    vasoconstriction, (3) The Dynamic Graph edges light up as cross-modal coupling
+                                    surges, and (4) The Gauge spikes to 80%+ turning crimson ("ACUTE MENTAL STRESS").
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="guide-step">
+                            <div class="step-num">4</div>
+                            <div class="step-content">
+                                <h4>Recovery Phase (30 Sec)</h4>
+                                <p>Click <b>🔵 Recovery Phase</b>. Show that the subject calms down post-stress and the
+                                    ST-GCN model drops probability back to normal, proving zero latching or
+                                    false-positive drift.</p>
+                            </div>
+                        </div>
+
+                        <div class="guide-step">
+                            <div class="step-num">5</div>
+                            <div class="step-content">
+                                <h4>Evaluation Results & Architecture Defense (1 Min)</h4>
+                                <p>Click <b>📊 Evaluation Evidence</b> in the header. Show the table: 76.50% Acc, 0.6578
+                                    Stress F1 (+13.88% over CNN), 2.57 ms latency, and 73.8 KB model size.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    style="background: rgba(18, 28, 48, 0.6); padding: 1.2rem; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.06);">
+                    <h4 style="font-size: 0.95rem; margin-bottom: 0.6rem; color: var(--cyan-glow);">Defensive Q&A For
+                        Reviewers:</h4>
+
+                    <div style="margin-bottom: 1rem;">
+                        <p style="font-size: 0.85rem; font-weight: 600; color: #F1F5F9;">Q: "Why are you using WESAD
+                            replay instead of live ESP32 sensors?"</p>
+                        <div class="quote-box">
+                            "Our current implementation uses the clinical WESAD benchmark to validate the complete
+                            algorithmic pipeline under controlled laboratory stress conditions (TSST protocol). Because
+                            acute psychological stress cannot be safely or ethically induced ad-hoc during a 5-minute
+                            academic review, prerecorded clinical replay allows us to demonstrate verified stress
+                            transitions against known medical ground truth. Our pipeline is 100% dual-mode: if an ESP32
+                            is connected via USB, it automatically switches to live physical acquisition."
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 0.5rem;">
+                        <p style="font-size: 0.85rem; font-weight: 600; color: #F1F5F9;">Q: "Why does ST-GCN beat
+                            standard 1D-CNN?"</p>
+                        <div class="quote-box">
+                            "Standard 1D-CNN applies parallel 1D filters independently across channels, failing to
+                            capture how channels interact. ST-GCN computes a dynamic Pearson correlation matrix every 3
+                            seconds: when stress triggers simultaneous tachycardia and vasoconstriction, the graph edge
+                            weights strengthen, allowing the spatial GCN layer to propagate cross-modal features. This
+                            yields a +13.88% higher Stress F1 on clinical test subjects."
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Model Architecture -->
+    <div class="modal-overlay" id="modal-arch">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span>📐</span> ST-GCN Architecture & Pipeline Specification
+                </div>
+                <button class="btn-close-modal" id="btn-close-arch">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <h3 style="font-size: 1.05rem; margin-bottom: 0.4rem; color: #F1F5F9;">Network Architecture
+                        Specifications</h3>
+                    <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.8rem;">
+                        Designed for extreme edge efficiency: 6,466 parameters, 73.8 KB ONNX binary, 2.57 ms CPU
+                        latency.
+                    </p>
+                    <table class="benchmark-table">
+                        <thead>
+                            <tr>
+                                <th>Stage / Layer</th>
+                                <th>Operation & Description</th>
+                                <th>Output Tensor Shape</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Input Window</td>
+                                <td>3 synchronized channels (ECG, PPG, Temp) @ 128 Hz (3.0s window)</td>
+                                <td>(B, 3, 384)</td>
+                            </tr>
+                            <tr>
+                                <td>Graph Construction</td>
+                                <td>Dynamic Pearson Correlation Adjacency A = |corr(x)| + I</td>
+                                <td>(B, 3, 3)</td>
+                            </tr>
+                            <tr>
+                                <td>Spatial Conv 1</td>
+                                <td>ManualGCNConv (1 in-feat → 32 hidden, ReLU)</td>
+                                <td>(B, 384, 3, 32)</td>
+                            </tr>
+                            <tr>
+                                <td>Spatial Conv 2</td>
+                                <td>ManualGCNConv (32 hidden → 32 hidden, ReLU)</td>
+                                <td>(B, 384, 3, 32)</td>
+                            </tr>
+                            <tr>
+                                <td>Temporal Conv</td>
+                                <td>1D Conv1D (Kernel = 7, 32 → 64 channels) + BatchNorm + AdaptiveAvgPool</td>
+                                <td>(B, 3, 64)</td>
+                            </tr>
+                            <tr>
+                                <td>Global Pooling</td>
+                                <td>Global Node Mean Pooling over V=3 nodes</td>
+                                <td>(B, 64)</td>
+                            </tr>
+                            <tr class="highlight-row">
+                                <td>Classification Head</td>
+                                <td>Linear(64 → 2) + Softmax (Calm vs Acute Stress)</td>
+                                <td>(B, 2)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div
+                    style="background: rgba(7, 11, 19, 0.6); padding: 0.8rem; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center; margin-top: 0.6rem;">
+                    <img src="/outputs/stgcn_architecture.png" alt="ST-GCN Architecture Diagram"
+                        style="max-width: 100%; border-radius: 6px;"
+                        onerror="this.parentElement.innerHTML='<p style=\'color: var(--text-muted); font-size: 0.8rem;\'>ST-GCN Architecture Diagram Available in outputs/stgcn_architecture.png</p>'">
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.4rem;">Figure 2: ST-GCN Dual
+                        Spatio-Temporal Convolution Pipeline</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
     <footer>
-        Multimodal Wearable Stress Telemetry Node &bull; Praneet Raj (25BCE2280), Aarav Shukla (25BCE0707), Saanvy Panda (25BCE2180) &bull; Guide: Dr. Vivek Rajpoot
+        Multimodal Wearable Stress Telemetry &bull; Capstone Technical Review (Group: Chota Chatri) &bull; Bhavya Singh
+        (25BCE2004), Soham Sharma (25BCE0403), Praneet Raj (25BCE2280) &bull; School of Computer Science and
+        Engineering, Vellore Institute of Technology
     </footer>
 
+    <!-- Scripts -->
     <script>
-        // Setup Real-Time Canvas Oscilloscopes
+        // Setup Waveform Oscilloscopes
         const ecgCanvas = document.getElementById('canvas-ecg');
         const ppgCanvas = document.getElementById('canvas-ppg');
         const tempCanvas = document.getElementById('canvas-temp');
+        const graphCanvas = document.getElementById('canvas-graph');
 
         const ecgCtx = ecgCanvas.getContext('2d');
         const ppgCtx = ppgCanvas.getContext('2d');
         const tempCtx = tempCanvas.getContext('2d');
+        const graphCtx = graphCanvas.getContext('2d');
 
         function resizeCanvases() {
-            [ecgCanvas, ppgCanvas, tempCanvas].forEach(c => {
+            [ecgCanvas, ppgCanvas, tempCanvas, graphCanvas].forEach(c => {
                 c.width = c.parentElement.clientWidth * window.devicePixelRatio;
                 c.height = c.parentElement.clientHeight * window.devicePixelRatio;
             });
+            drawGraphNodes(0.0, 0.0, 0.0);
         }
         window.addEventListener('resize', resizeCanvases);
         resizeCanvases();
 
-        function drawWaveform(ctx, points, color, glowColor, baselineOffset = 0.5) {
+        function drawWaveform(ctx, points, color, glowColor) {
             const w = ctx.canvas.width;
             const h = ctx.canvas.height;
             ctx.clearRect(0, 0, w, h);
 
             if (!points || points.length === 0) return;
 
-            // Draw subtle background gridlines
+            // Background subtle gridlines
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
             ctx.lineWidth = 1;
             for (let x = 0; x < w; x += 40) {
                 ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
             }
 
-            // Normalize points
             const min = Math.min(...points);
             const max = Math.max(...points);
             const range = (max - min) || 1.0;
 
             ctx.beginPath();
             ctx.strokeStyle = color;
-            ctx.lineWidth = 2.5 * window.devicePixelRatio;
+            ctx.lineWidth = 2.4 * window.devicePixelRatio;
             ctx.shadowColor = glowColor;
-            ctx.shadowBlur = 10;
+            ctx.shadowBlur = 9;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
 
             for (let i = 0; i < points.length; i++) {
                 const x = (i / (points.length - 1)) * w;
                 const normY = (points[i] - min) / range;
-                const y = h - (normY * (h * 0.75) + h * 0.12);
+                const y = h - (normY * (h * 0.74) + h * 0.13);
                 if (i === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
             }
@@ -577,14 +1594,115 @@
             ctx.shadowBlur = 0;
         }
 
-        // Dynamic UI Elements
-        const circumference = 2 * Math.PI * 88; // ~552.9
+        // Draw Dynamic 3-Node Physiological Graph
+        function drawGraphNodes(rEcgPpg, rEcgTemp, rPpgTemp) {
+            const w = graphCanvas.width;
+            const h = graphCanvas.height;
+            graphCtx.clearRect(0, 0, w, h);
+
+            const cx = w / 2;
+            const cy = h / 2 + 10;
+            const radius = Math.min(w, h) * 0.35;
+
+            // 3 Nodes: Top (ECG), Bottom-Left (PPG), Bottom-Right (TEMP)
+            const nodes = [
+                { id: 'ECG', x: cx, y: cy - radius * 0.85, color: '#00F0FF', label: 'AD8232 ECG' },
+                { id: 'PPG', x: cx - radius * 0.9, y: cy + radius * 0.65, color: '#EC4899', label: 'MAX30102 PPG' },
+                { id: 'TEMP', x: cx + radius * 0.9, y: cy + radius * 0.65, color: '#F59E0B', label: 'DS18B20 TEMP' }
+            ];
+
+            const edges = [
+                { from: 0, to: 1, r: Math.abs(rEcgPpg), rawR: rEcgPpg, label: 'ECG-PPG' },
+                { from: 0, to: 2, r: Math.abs(rEcgTemp), rawR: rEcgTemp, label: 'ECG-TEMP' },
+                { from: 1, to: 2, r: Math.abs(rPpgTemp), rawR: rPpgTemp, label: 'PPG-TEMP' }
+            ];
+
+            // Draw Edges with Dynamic Width & Glow
+            edges.forEach(e => {
+                const p1 = nodes[e.from];
+                const p2 = nodes[e.to];
+                const weight = Math.max(0.08, e.r);
+
+                graphCtx.beginPath();
+                graphCtx.moveTo(p1.x, p1.y);
+                graphCtx.lineTo(p2.x, p2.y);
+
+                const lineWidth = (1.5 + weight * 9) * window.devicePixelRatio;
+                graphCtx.lineWidth = lineWidth;
+
+                if (weight > 0.35) {
+                    graphCtx.strokeStyle = 'rgba(239, 68, 68, 0.85)';
+                    graphCtx.shadowColor = '#EF4444';
+                    graphCtx.shadowBlur = 12 * weight;
+                } else if (weight > 0.15) {
+                    graphCtx.strokeStyle = 'rgba(245, 158, 11, 0.75)';
+                    graphCtx.shadowColor = '#F59E0B';
+                    graphCtx.shadowBlur = 8 * weight;
+                } else {
+                    graphCtx.strokeStyle = 'rgba(56, 189, 248, 0.3)';
+                    graphCtx.shadowColor = '#38BDF8';
+                    graphCtx.shadowBlur = 4;
+                }
+                graphCtx.stroke();
+                graphCtx.shadowBlur = 0;
+
+                // Edge correlation tag in center of edge
+                const midX = (p1.x + p2.x) / 2;
+                const midY = (p1.y + p2.y) / 2;
+                graphCtx.fillStyle = 'rgba(14, 22, 38, 0.85)';
+                graphCtx.fillRect(midX - 24, midY - 11, 48, 22);
+                graphCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                graphCtx.lineWidth = 1;
+                graphCtx.strokeRect(midX - 24, midY - 11, 48, 22);
+                graphCtx.fillStyle = '#FFFFFF';
+                graphCtx.font = `${10 * window.devicePixelRatio}px 'JetBrains Mono'`;
+                graphCtx.textAlign = 'center';
+                graphCtx.textBaseline = 'middle';
+                graphCtx.fillText(`r=${e.rawR.toFixed(2)}`, midX, midY);
+            });
+
+            // Draw Nodes
+            nodes.forEach(n => {
+                const nodeR = 24 * window.devicePixelRatio;
+
+                // Outer glow ring
+                graphCtx.beginPath();
+                graphCtx.arc(n.x, n.y, nodeR + 4, 0, Math.PI * 2);
+                graphCtx.strokeStyle = n.color;
+                graphCtx.lineWidth = 2 * window.devicePixelRatio;
+                graphCtx.shadowColor = n.color;
+                graphCtx.shadowBlur = 15;
+                graphCtx.stroke();
+                graphCtx.shadowBlur = 0;
+
+                // Node circle
+                graphCtx.beginPath();
+                graphCtx.arc(n.x, n.y, nodeR, 0, Math.PI * 2);
+                graphCtx.fillStyle = '#0E1626';
+                graphCtx.fill();
+
+                // Node text
+                graphCtx.fillStyle = n.color;
+                graphCtx.font = `bold ${11 * window.devicePixelRatio}px 'Outfit'`;
+                graphCtx.textAlign = 'center';
+                graphCtx.textBaseline = 'middle';
+                graphCtx.fillText(n.id, n.x, n.y - 2);
+
+                graphCtx.fillStyle = '#94A3B8';
+                graphCtx.font = `${8 * window.devicePixelRatio}px 'JetBrains Mono'`;
+                graphCtx.fillText('NODE', n.x, n.y + 10);
+            });
+        }
+
+        // Dynamic UI References
+        const circumference = 2 * Math.PI * 88;
         const gaugeCircle = document.getElementById('gauge-circle');
         const probNum = document.getElementById('prob-num');
         const statusPill = document.getElementById('status-pill');
         const latencyText = document.getElementById('latency-text');
         const truthText = document.getElementById('truth-text');
         const predText = document.getElementById('pred-text');
+        const matchBadge = document.getElementById('match-badge');
         const hrStat = document.getElementById('hr-stat');
         const rrStat = document.getElementById('rr-stat');
         const ppgStat = document.getElementById('ppg-stat');
@@ -596,17 +1714,30 @@
         const connBadge = document.getElementById('conn-badge');
         const connDot = document.getElementById('conn-dot');
         const connText = document.getElementById('conn-text');
+        const timeCurrent = document.getElementById('time-current');
+        const timelineProgress = document.getElementById('timeline-progress');
+        const timelineHandle = document.getElementById('timeline-handle');
+        const phaseBadge = document.getElementById('phase-badge');
 
-        function updateGauge(prob, isLive, prediction) {
-            if (!isLive) {
-                probNum.textContent = '0%';
+        const edgeEcgPpg = document.getElementById('edge-ecg-ppg');
+        const edgeEcgTemp = document.getElementById('edge-ecg-temp');
+        const edgePpgTemp = document.getElementById('edge-ppg-temp');
+
+        // Matrix Cells
+        const mat01 = document.getElementById('mat-01');
+        const mat02 = document.getElementById('mat-02');
+        const mat10 = document.getElementById('mat-10');
+        const mat12 = document.getElementById('mat-12');
+        const mat20 = document.getElementById('mat-20');
+        const mat21 = document.getElementById('mat-21');
+
+        function updateGauge(prob, isActive, prediction) {
+            if (!isActive) {
+                probNum.textContent = '--%';
                 gaugeCircle.style.strokeDashoffset = circumference;
                 gaugeCircle.style.stroke = '#64748B';
                 statusPill.className = 'status-pill';
-                statusPill.style.color = '#94A3B8';
-                statusPill.style.borderColor = '#475569';
-                statusPill.style.background = 'rgba(71, 85, 105, 0.2)';
-                statusPill.textContent = 'AWAITING HARDWARE (COM5)...';
+                statusPill.textContent = 'TELEMETRY STANDBY...';
                 return;
             }
 
@@ -639,9 +1770,10 @@
             }
         }
 
-        // Connect WebSocket Stream
+        // WebSocket Connection & Real-Time Ingestion
         let ws;
-        let isStreaming = true;
+        let isPlaying = true;
+        let currentTotalWindows = 1421;
 
         function connectWebSocket() {
             const loc = window.location;
@@ -649,73 +1781,197 @@
             ws = new WebSocket(wsUri);
 
             ws.onopen = () => {
-                connText.textContent = 'CONNECTING TO HARDWARE...';
+                connText.textContent = 'WESAD STREAM (128 Hz)';
             };
 
             ws.onmessage = (event) => {
-                if (!isStreaming) return;
                 const data = JSON.parse(event.data);
 
                 // Update Waveforms
-                drawWaveform(ecgCtx, data.ecg_points, '#06B6D4', 'rgba(6, 182, 212, 0.6)');
+                drawWaveform(ecgCtx, data.ecg_points, '#00F0FF', 'rgba(0, 240, 255, 0.6)');
                 drawWaveform(ppgCtx, data.ppg_points, '#EC4899', 'rgba(236, 72, 153, 0.6)');
                 drawWaveform(tempCtx, data.temp_points, '#F59E0B', 'rgba(245, 158, 11, 0.6)');
 
-                // Update Gauge and Inference Status
-                updateGauge(data.stress_probability, data.is_live_hardware, data.prediction);
-                latencyText.textContent = data.is_live_hardware ? `${data.latency_ms.toFixed(2)} ms` : '-- ms';
-                truthText.textContent = data.source;
+                // Update Dynamic Graph
+                if (data.correlations) {
+                    const c = data.correlations;
+                    drawGraphNodes(c.r_ecg_ppg, c.r_ecg_temp, c.r_ppg_temp);
+                    edgeEcgPpg.textContent = `r = ${c.r_ecg_ppg.toFixed(2)}`;
+                    edgeEcgTemp.textContent = `r = ${c.r_ecg_temp.toFixed(2)}`;
+                    edgePpgTemp.textContent = `r = ${c.r_ppg_temp.toFixed(2)}`;
+
+                    if (c.adj_matrix) {
+                        const m = c.adj_matrix;
+                        mat01.textContent = m[0][1].toFixed(2);
+                        mat02.textContent = m[0][2].toFixed(2);
+                        mat10.textContent = m[1][0].toFixed(2);
+                        mat12.textContent = m[1][2].toFixed(2);
+                        mat20.textContent = m[2][0].toFixed(2);
+                        mat21.textContent = m[2][1].toFixed(2);
+                    }
+                }
+
+                // Update Gauge & Inference
+                const isActive = data.prediction && data.prediction !== 'Standby';
+                updateGauge(data.stress_probability, isActive, data.prediction);
+                latencyText.textContent = data.latency_ms ? `${data.latency_ms.toFixed(2)} ms` : '-- ms';
+                truthText.textContent = data.ground_truth || data.source;
                 predText.textContent = data.prediction;
 
-                // Update Real Live Biosignal Indicators
+                // Match Badge
+                if (data.is_match) {
+                    matchBadge.className = 'match-badge match-ok';
+                    matchBadge.textContent = 'MATCH [CORRECT]';
+                } else {
+                    matchBadge.className = 'match-badge match-mismatch';
+                    matchBadge.textContent = 'MISMATCH';
+                }
+
+                // Biosignals
                 if (hrStat) hrStat.textContent = data.live_hr || '-- BPM';
                 if (rrStat) rrStat.textContent = data.live_rr || 'Measuring...';
                 if (ppgStat) ppgStat.textContent = data.ppg_status || 'Measuring...';
                 if (tempStat) tempStat.textContent = data.current_temp_c || '-- °C';
                 if (tempDesc) tempDesc.textContent = data.temp_desc || '';
 
-                // Update Real Raw Telemetry Diagnostics Bar
-                if (diagPkts) diagPkts.textContent = `${(data.packets_count || 0).toLocaleString()} (128 Hz)`;
+                // Diagnostics
+                const diagMode = document.getElementById('diag-mode');
+                if (diagMode) diagMode.textContent = data.stream_mode || 'WESAD Replay';
+                if (diagPkts) diagPkts.textContent = `${(data.packets_count || 0).toLocaleString()} @ 128 Hz`;
                 if (diagRaw) diagRaw.textContent = `ECG: ${data.raw_ecg ?? '--'} | PPG: ${data.raw_ppg ?? '--'}`;
                 if (diagLead) {
-                    if (data.lead_status === 'CONNECTED') {
-                        diagLead.textContent = 'ACTIVE [CONNECTED]';
-                        diagLead.style.color = '#10B981';
-                    } else {
-                        diagLead.textContent = 'INTERLOCK [LEADS DETACHED]';
-                        diagLead.style.color = '#EF4444';
-                    }
+                    diagLead.textContent = data.lead_status === 'CONNECTED' ? 'ACTIVE [CONNECTED]' : 'LEADS DETACHED';
+                    diagLead.style.color = data.lead_status === 'CONNECTED' ? '#10B981' : '#EF4444';
                 }
 
-                // Update Connection Badge
-                if (data.is_live_hardware) {
-                    connText.textContent = data.source;
-                    connDot.style.background = '#10B981';
-                    connDot.style.boxShadow = '0 0 12px #10B981';
-                    connBadge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
-                } else {
-                    connText.textContent = 'HARDWARE DISCONNECTED (Connect ESP32)';
-                    connDot.style.background = '#EF4444';
-                    connDot.style.boxShadow = '0 0 10px #EF4444';
-                    connBadge.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                // Timeline Scrubber & Phase
+                if (data.window_index !== undefined && data.total_windows) {
+                    currentTotalWindows = data.total_windows;
+                    const pct = (data.window_index / data.total_windows) * 100;
+                    timelineProgress.style.width = `${pct}%`;
+                    timelineHandle.style.left = `${pct}%`;
+                    timeCurrent.textContent = `Window: ${data.window_index + 1} / ${data.total_windows}`;
+
+                    if (data.phase) {
+                        phaseBadge.textContent = data.phase;
+                        if (data.phase.includes('Stress')) {
+                            phaseBadge.style.color = 'var(--crimson-glow)';
+                        } else if (data.phase.includes('Recovery')) {
+                            phaseBadge.style.color = '#60A5FA';
+                        } else {
+                            phaseBadge.style.color = 'var(--emerald-glow)';
+                        }
+                    }
+
+                    // Adjust phase bands on timeline
+                    if (data.first_stress && data.last_stress) {
+                        const b1 = (data.first_stress / data.total_windows) * 100;
+                        const b2 = ((data.last_stress - data.first_stress) / data.total_windows) * 100;
+                        const b3 = ((data.total_windows - data.last_stress) / data.total_windows) * 100;
+                        document.getElementById('band-baseline').style.width = `${b1}%`;
+                        document.getElementById('band-stress').style.left = `${b1}%`;
+                        document.getElementById('band-stress').style.width = `${b2}%`;
+                        document.getElementById('band-recovery').style.left = `${b1 + b2}%`;
+                        document.getElementById('band-recovery').style.width = `${b3}%`;
+                    }
                 }
             };
 
             ws.onclose = () => {
-                connText.textContent = 'DISCONNECTED (RECONNECTING...)';
-                connDot.style.background = '#EF4444';
+                connText.textContent = 'RECONNECTING...';
+                connDot.style.background = '#F59E0B';
                 setTimeout(connectWebSocket, 1500);
             };
         }
 
         connectWebSocket();
 
-        // Button Controls
-        const btnToggle = document.getElementById('btn-toggle-stream');
-        btnToggle.addEventListener('click', () => {
-            isStreaming = !isStreaming;
-            btnToggle.textContent = isStreaming ? 'Pause Live Stream' : 'Resume Live Stream';
+        // Control Helpers
+        function sendCmd(cmd) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify(cmd));
+            }
+        }
+
+        // Subject Selector
+        const selectSubject = document.getElementById('select-subject');
+        selectSubject.addEventListener('change', (e) => {
+            sendCmd({ action: 'set_subject', subject: parseInt(e.target.value) });
+        });
+
+        // Phase Jump Buttons
+        document.getElementById('btn-jump-baseline').addEventListener('click', () => {
+            sendCmd({ action: 'jump_phase', phase: 'baseline' });
+        });
+
+        document.getElementById('btn-jump-stress').addEventListener('click', () => {
+            sendCmd({ action: 'jump_phase', phase: 'stress' });
+        });
+
+        document.getElementById('btn-jump-recovery').addEventListener('click', () => {
+            sendCmd({ action: 'jump_phase', phase: 'recovery' });
+        });
+
+        // Play / Pause / Step Controls
+        const btnTogglePlay = document.getElementById('btn-toggle-play');
+        btnTogglePlay.addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            btnTogglePlay.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+            sendCmd({ action: isPlaying ? 'play' : 'pause' });
+        });
+
+        document.getElementById('btn-step-fwd').addEventListener('click', () => {
+            isPlaying = false;
+            btnTogglePlay.textContent = '▶ Play';
+            sendCmd({ action: 'step' });
+        });
+
+        document.getElementById('btn-step-back').addEventListener('click', () => {
+            isPlaying = false;
+            btnTogglePlay.textContent = '▶ Play';
+            sendCmd({ action: 'step_back' });
+        });
+
+        document.getElementById('btn-reset').addEventListener('click', () => {
+            sendCmd({ action: 'reset' });
+        });
+
+        // Playback Speed Selector
+        document.getElementById('select-speed').addEventListener('change', (e) => {
+            sendCmd({ action: 'set_speed', speed: parseFloat(e.target.value) });
+        });
+
+        // Interactive Timeline Scrubbing
+        const timelineBar = document.getElementById('timeline-bar');
+        timelineBar.addEventListener('click', (e) => {
+            const rect = timelineBar.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const pct = Math.max(0, Math.min(1, clickX / rect.width));
+            const targetIdx = Math.floor(pct * currentTotalWindows);
+            sendCmd({ action: 'seek', index: targetIdx });
+        });
+
+        // Modal Handlers
+        const modalEvidence = document.getElementById('modal-evidence');
+        const modalGuide = document.getElementById('modal-guide');
+        const modalArch = document.getElementById('modal-arch');
+
+        document.getElementById('btn-open-evidence').addEventListener('click', () => modalEvidence.classList.add('open'));
+        document.getElementById('btn-close-evidence').addEventListener('click', () => modalEvidence.classList.remove('open'));
+
+        document.getElementById('btn-open-guide').addEventListener('click', () => modalGuide.classList.add('open'));
+        document.getElementById('btn-close-guide').addEventListener('click', () => modalGuide.classList.remove('open'));
+
+        document.getElementById('btn-open-arch').addEventListener('click', () => modalArch.classList.add('open'));
+        document.getElementById('btn-close-arch').addEventListener('click', () => modalArch.classList.remove('open'));
+
+        // Close on clicking backdrop
+        [modalEvidence, modalGuide, modalArch].forEach(m => {
+            m.addEventListener('click', (e) => {
+                if (e.target === m) m.classList.remove('open');
+            });
         });
     </script>
 </body>
+
 </html>

@@ -28,7 +28,7 @@ class StressDetector:
         self.session = ort.InferenceSession(model_path, opts, providers=["CPUExecutionProvider"])
         self.input_name = self.session.get_inputs()[0].name
 
-    def predict(self, window: np.ndarray) -> dict:
+    def predict(self, window: np.ndarray, is_preprocessed: bool = True) -> dict:
         """
         Run inference on a single 3-second window.
 
@@ -38,6 +38,10 @@ class StressDetector:
                  Channel 0: AD8232 ECG (128 Hz)
                  Channel 1: MAX30102 PPG (128 Hz)
                  Channel 2: DS18B20 Skin Temperature (128 Hz)
+        is_preprocessed : bool, default True
+                 If True, assumes window is already bandpass filtered and subject-normalized
+                 (e.g., cached WESAD benchmark windows).
+                 If False, applies per-window standardization for uncalibrated raw live input.
 
         Returns
         -------
@@ -48,10 +52,14 @@ class StressDetector:
         
         window = window.astype(np.float32)
 
-        # Subject-wise z-score normalization per channel
-        mean = window.mean(axis=-1, keepdims=True)
-        std = window.std(axis=-1, keepdims=True) + 1e-8
-        norm_window = (window - mean) / std
+        if not is_preprocessed:
+            # Per-window z-score normalization for uncalibrated raw input
+            mean = window.mean(axis=-1, keepdims=True)
+            std = window.std(axis=-1, keepdims=True) + 1e-8
+            norm_window = (window - mean) / std
+        else:
+            # Direct pass-through for pre-normalized benchmark inputs
+            norm_window = window
 
         t0 = time.perf_counter()
         logits = self.session.run(None, {self.input_name: norm_window})[0]  # (1, 2)
